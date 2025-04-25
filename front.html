@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Presenças</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .card {
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: scale(1.02);
+        }
+        .presenca-count {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        .dia-semana {
+            font-size: 1.2rem;
+            color: #666;
+        }
+        .progress {
+            height: 10px;
+        }
+        .chart-container {
+            height: 300px;
+        }
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+        }
+        .nav-link {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="#">Sistema de Presenças</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav" id="menuPrincipal">
+                    <!-- Os itens do menu serão inseridos via JavaScript -->
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Página de Igrejas -->
+        <div id="igrejas" class="page active">
+            <h2 class="mb-4">Gerenciar Igrejas</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Nova Igreja</h5>
+                            <form id="formIgreja">
+                                <div class="mb-3">
+                                    <label class="form-label">Nome</label>
+                                    <input type="text" class="form-control" id="nomeIgreja" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Endereço</label>
+                                    <input type="text" class="form-control" id="enderecoIgreja" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Telefone</label>
+                                    <input type="tel" class="form-control" id="telefoneIgreja" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Salvar</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Lista de Igrejas</h5>
+                            <div id="listaIgrejas"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Página de Membros -->
+        <div id="membros" class="page">
+            <h2 class="mb-4">Gerenciar Membros</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Novo Membro</h5>
+                            <form id="formMembro">
+                                <div class="mb-3">
+                                    <label class="form-label">Nome</label>
+                                    <input type="text" class="form-control" id="nomeMembro" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Data de Nascimento</label>
+                                    <input type="date" class="form-control" id="dataNascimentoMembro" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Telefone</label>
+                                    <input type="tel" class="form-control" id="telefoneMembro" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="emailMembro" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Igreja</label>
+                                    <select class="form-select" id="igrejaMembro" required></select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Salvar</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Lista de Membros</h5>
+                            <div id="listaMembros"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Página de Registrar Presenças -->
+        <div id="presencas" class="page">
+            <h2 class="mb-4">Registrar Presenças</h2>
+            <div class="row">
+                <div class="col-12 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Data da Presença</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Data</label>
+                                    <input type="date" class="form-control" id="dataPresenca">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Dia da Semana</label>
+                                    <select class="form-select" id="diaSemana">
+                                        <option value="Domingo">Domingo</option>
+                                        <option value="Segunda">Segunda</option>
+                                        <option value="Terça">Terça</option>
+                                        <option value="Quarta">Quarta</option>
+                                        <option value="Quinta">Quinta</option>
+                                        <option value="Sexta">Sexta</option>
+                                        <option value="Sábado">Sábado</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="card-title mb-0">Membros Presentes</h5>
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="selecionarTodosMembros()">
+                                    Selecionar Todos
+                                </button>
+                            </div>
+                            <form id="formPresencas">
+                                <div id="listaMembrosPresenca" class="list-group"></div>
+                                <button type="submit" class="btn btn-primary w-100 mt-3">Registrar Presenças</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Página de Consultar Presenças -->
+        <div id="consultar" class="page">
+            <h2 class="mb-4">Consultar Presenças</h2>
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="month" id="mesSelecionado" class="form-control">
+                        <button class="btn btn-primary" onclick="buscarResumo()">Buscar</button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <select id="membroSelecionado" class="form-select">
+                        <option value="">Selecione um membro</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Gráfico de Presenças</h5>
+                            <div class="chart-container">
+                                <canvas id="presencaChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Total de Presenças</h5>
+                            <h2 id="totalPresencas" class="text-center">0</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" id="cardsPresenca">
+                <!-- Cards serão inseridos aqui via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let presencaChart = null;
+        let membros = [];
+        let igrejas = [];
+        let usuarioAtual = null;
+
+        // Função para fazer requisições autenticadas
+        async function fazerRequisicao(url, options = {}) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const headers = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+                ...options.headers
+            };
+
+            try {
+                const response = await fetch(url, {
+                    ...options,
+                    headers
+                });
+
+                if (response.status === 401) {
+                    localStorage.removeItem('token');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                return response;
+            } catch (error) {
+                console.error('Erro na requisição:', error);
+                throw error;
+            }
+        }
+
+        // Função para carregar informações do usuário
+        async function carregarUsuario() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // Decodificar o token para pegar o ID do usuário
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                const response = await fazerRequisicao(`http://localhost:3000/membros/${payload.id}`);
+                usuarioAtual = await response.json();
+                
+                // Atualizar o menu baseado no perfil
+                atualizarMenu();
+            } catch (error) {
+                console.error('Erro ao carregar usuário:', error);
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Função para atualizar o menu baseado no perfil
+        function atualizarMenu() {
+            const menu = document.getElementById('menuPrincipal');
+            menu.innerHTML = '';
+
+            if (usuarioAtual.perfil === 'admin') {
+                menu.innerHTML = `
+                    <li class="nav-item">
+                        <a class="nav-link" data-page="igrejas">Igrejas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-page="membros">Membros</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-page="presencas">Registrar Presenças</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-page="consultar">Consultar Presenças</a>
+                    </li>
+                `;
+            } else {
+                menu.innerHTML = `
+                    <li class="nav-item">
+                        <a class="nav-link" data-page="presencas">Registrar Presenças</a>
+                    </li>
+                `;
+            }
+
+            // Adicionar eventos aos links do menu
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+                    document.getElementById(link.dataset.page).classList.add('active');
+                    
+                    // Carrega os dados específicos da página
+                    switch(link.dataset.page) {
+                        case 'igrejas':
+                            carregarIgrejas();
+                            break;
+                        case 'membros':
+                            carregarMembros();
+                            break;
+                        case 'presencas':
+                            carregarMembrosParaPresenca();
+                            break;
+                    }
+                });
+            });
+        }
+
+        // Funções para Igrejas
+        async function carregarIgrejas() {
+            try {
+                const response = await fazerRequisicao('http://localhost:3000/igrejas');
+                igrejas = await response.json();
+                const container = document.getElementById('listaIgrejas');
+                const select = document.getElementById('igrejaMembro');
+                
+                container.innerHTML = '';
+                select.innerHTML = '<option value="">Selecione uma igreja</option>';
+                
+                igrejas.forEach(igreja => {
+                    // Adiciona à lista
+                    const div = document.createElement('div');
+                    div.className = 'mb-2';
+                    div.innerHTML = `
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">${igreja.nome}</h5>
+                                <p class="card-text">
+                                    <strong>Endereço:</strong> ${igreja.endereco}<br>
+                                    <strong>Telefone:</strong> ${igreja.telefone}
+                                </p>
+                                <button class="btn btn-sm btn-danger" onclick="excluirIgreja('${igreja.id}')">Excluir</button>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(div);
+
+                    // Adiciona ao select
+                    const option = document.createElement('option');
+                    option.value = igreja.id;
+                    option.textContent = igreja.nome;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Erro ao carregar igrejas:', error);
+            }
+        }
+
+        document.getElementById('formIgreja').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                const response = await fazerRequisicao('http://localhost:3000/igrejas', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        nome: document.getElementById('nomeIgreja').value,
+                        endereco: document.getElementById('enderecoIgreja').value,
+                        telefone: document.getElementById('telefoneIgreja').value
+                    })
+                });
+                if (response.ok) {
+                    document.getElementById('nomeIgreja').value = '';
+                    document.getElementById('enderecoIgreja').value = '';
+                    document.getElementById('telefoneIgreja').value = '';
+                    carregarIgrejas();
+                }
+            } catch (error) {
+                console.error('Erro ao criar igreja:', error);
+            }
+        });
+
+        async function excluirIgreja(id) {
+            if (confirm('Tem certeza que deseja excluir esta igreja?')) {
+                try {
+                    const response = await fazerRequisicao(`http://localhost:3000/igrejas/${id}`, {
+                        method: 'DELETE'
+                    });
+                    if (response.ok) {
+                        carregarIgrejas();
+                    }
+                } catch (error) {
+                    console.error('Erro ao excluir igreja:', error);
+                }
+            }
+        }
+
+        // Funções para Membros
+        async function carregarMembros() {
+            try {
+                const response = await fazerRequisicao('http://localhost:3000/membros');
+                membros = await response.json();
+                const container = document.getElementById('listaMembros');
+                const select = document.getElementById('membroSelecionado');
+                
+                container.innerHTML = '';
+                select.innerHTML = '<option value="">Selecione um membro</option>';
+                
+                membros.forEach(membro => {
+                    // Adiciona à lista
+                    const div = document.createElement('div');
+                    div.className = 'mb-2';
+                    div.innerHTML = `
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">${membro.nome}</h5>
+                                <p class="card-text">
+                                    <strong>Igreja:</strong> ${igrejas.find(i => i.id === membro.igreja_id)?.nome || 'Igreja não encontrada'}<br>
+                                    <strong>Data de Nascimento:</strong> ${new Date(membro.data_nascimento).toLocaleDateString()}<br>
+                                    <strong>Telefone:</strong> ${membro.telefone}<br>
+                                    <strong>Email:</strong> ${membro.email}<br>
+                                    <strong>Perfil:</strong> ${membro.perfil === 'admin' ? 'Administrador' : 'Usuário Comum'}
+                                </p>
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-outline-secondary" style="color: black;" 
+                                            onclick="alterarPerfilMembro('${membro.id}', '${membro.perfil === 'admin' ? 'comum' : 'admin'}')">
+                                        ${membro.perfil === 'admin' ? 'Definir como Usuário <b>Comum</b>' : 'Promover a <b>Administrador</b>'}
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="excluirMembro('${membro.id}')">Excluir</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(div);
+
+                    // Adiciona ao select
+                    const option = document.createElement('option');
+                    option.value = membro.id;
+                    option.textContent = `${membro.nome} (${igrejas.find(i => i.id === membro.igreja_id)?.nome || 'Igreja não encontrada'})`;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Erro ao carregar membros:', error);
+            }
+        }
+
+        document.getElementById('formMembro').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                const response = await fazerRequisicao('http://localhost:3000/membros', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        nome: document.getElementById('nomeMembro').value,
+                        data_nascimento: document.getElementById('dataNascimentoMembro').value,
+                        telefone: document.getElementById('telefoneMembro').value,
+                        email: document.getElementById('emailMembro').value,
+                        igreja_id: document.getElementById('igrejaMembro').value
+                    })
+                });
+                if (response.ok) {
+                    document.getElementById('nomeMembro').value = '';
+                    document.getElementById('dataNascimentoMembro').value = '';
+                    document.getElementById('telefoneMembro').value = '';
+                    document.getElementById('emailMembro').value = '';
+                    document.getElementById('igrejaMembro').value = '';
+                    carregarMembros();
+                }
+            } catch (error) {
+                console.error('Erro ao criar membro:', error);
+            }
+        });
+
+        async function excluirMembro(id) {
+            if (confirm('Tem certeza que deseja excluir este membro?')) {
+                try {
+                    const response = await fazerRequisicao(`http://localhost:3000/membros/${id}`, {
+                        method: 'DELETE'
+                    });
+                    if (response.ok) {
+                        carregarMembros();
+                    }
+                } catch (error) {
+                    console.error('Erro ao excluir membro:', error);
+                }
+            }
+        }
+
+        // Funções para Presenças
+        async function carregarMembrosParaPresenca() {
+            const container = document.getElementById('listaMembrosPresenca');
+            container.innerHTML = '';
+            
+            // Preencher data e dia da semana automaticamente
+            const hoje = new Date();
+            const dataFormatada = hoje.toISOString().split('T')[0];
+            const diasSemana = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+            const diaSemana = diasSemana[hoje.getDay()];
+            
+            document.getElementById('dataPresenca').value = dataFormatada;
+            document.getElementById('diaSemana').value = diaSemana;
+            
+            try {
+                const response = await fazerRequisicao('http://localhost:3000/membros');
+                const membrosAtualizados = await response.json();
+                
+                membrosAtualizados.forEach(membro => {
+                    const div = document.createElement('div');
+                    div.className = 'list-group-item';
+                    div.innerHTML = `
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="${membro.id}" id="membro-${membro.id}">
+                            <label class="form-check-label" for="membro-${membro.id}">
+                                ${membro.nome} (${igrejas.find(i => i.id === membro.igreja_id)?.nome || 'Igreja não encontrada'})
+                            </label>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+            } catch (error) {
+                console.error('Erro ao carregar membros:', error);
+                alert('Erro ao carregar membros. Tente novamente.');
+            }
+        }
+
+        function selecionarTodosMembros() {
+            const checkboxes = document.querySelectorAll('#listaMembrosPresenca input[type="checkbox"]');
+            const todosSelecionados = Array.from(checkboxes).every(checkbox => checkbox.checked);
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = !todosSelecionados;
+            });
+        }
+
+        document.getElementById('formPresencas').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = document.getElementById('dataPresenca').value;
+            const diaSemana = document.getElementById('diaSemana').value;
+            const presentes = Array.from(document.querySelectorAll('#listaMembrosPresenca input:checked'))
+                .map(input => input.value);
+
+            if (presentes.length === 0) {
+                alert('Selecione pelo menos um membro para registrar presença');
+                return;
+            }
+
+            try {
+                console.log('Registrando presenças:', { presentes, data, diaSemana });
+                const response = await fazerRequisicao('http://localhost:3000/presencas/lote', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        presentes: presentes,
+                        data_presenca: data,
+                        dia_semana: diaSemana
+                    })
+                });
+
+                if (response.ok) {
+                    alert('Presenças registradas com sucesso!');
+                    // Limpar apenas os checkboxes
+                    document.querySelectorAll('#listaMembrosPresenca input').forEach(input => input.checked = false);
+                } else {
+                    const error = await response.json();
+                    alert(error.error || 'Erro ao registrar presenças');
+                }
+            } catch (error) {
+                console.error('Erro ao registrar presenças:', error);
+                alert('Erro ao registrar presenças. Tente novamente.');
+            }
+        });
+
+        // Funções para Consulta
+        async function buscarResumo() {
+            const membroId = document.getElementById('membroSelecionado').value;
+            const mes = document.getElementById('mesSelecionado').value;
+            
+            if (!membroId) {
+                alert('Por favor, selecione um membro');
+                return;
+            }
+
+            try {
+                console.log('Buscando resumo para:', { membroId, mes });
+                const response = await fazerRequisicao(`http://localhost:3000/membros/${membroId}/presencas/resumo?mes=${mes}`);
+                const resumo = await response.json();
+                console.log('Resumo recebido:', resumo);
+                
+                atualizarCards(resumo);
+                atualizarGrafico(resumo);
+                atualizarTotal(resumo);
+            } catch (error) {
+                console.error('Erro ao buscar resumo:', error);
+                alert('Erro ao buscar resumo. Verifique o console para mais detalhes.');
+            }
+        }
+
+        function atualizarCards(resumo) {
+            const container = document.getElementById('cardsPresenca');
+            container.innerHTML = '';
+            
+            const dias = {
+                segunda: 'Segunda',
+                terça: 'Terça',
+                quarta: 'Quarta',
+                quinta: 'Quinta',
+                sexta: 'Sexta',
+                sábado: 'Sábado',
+                domingo: 'Domingo'
+            };
+
+            // Garantir que todos os dias estejam presentes no resumo
+            Object.keys(dias).forEach(dia => {
+                if (!resumo.hasOwnProperty(dia)) {
+                    resumo[dia] = 0;
+                }
+            });
+
+            for (const [dia, quantidade] of Object.entries(resumo)) {
+                const card = document.createElement('div');
+                card.className = 'col-md-4 mb-3';
+                card.innerHTML = `
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <div class="dia-semana">${dias[dia]}</div>
+                            <div class="presenca-count">${quantidade}</div>
+                            <div class="progress mt-2">
+                                <div class="progress-bar" role="progressbar" 
+                                     style="width: ${(quantidade / 4) * 100}%" 
+                                     aria-valuenow="${quantidade}" 
+                                     aria-valuemin="0" 
+                                     aria-valuemax="4">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            }
+        }
+
+        function atualizarGrafico(resumo) {
+            const ctx = document.getElementById('presencaChart').getContext('2d');
+            
+            if (presencaChart) {
+                presencaChart.destroy();
+            }
+
+            const dias = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
+            const valores = dias.map(dia => resumo[dia.toLowerCase()] || 0);
+
+            presencaChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: dias,
+                    datasets: [{
+                        label: 'Presenças',
+                        data: valores,
+                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function atualizarTotal(resumo) {
+            const total = Object.values(resumo).reduce((a, b) => a + b, 0);
+            document.getElementById('totalPresencas').textContent = total;
+        }
+
+        function criarCardMembro(membro) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <h3>${membro.nome}</h3>
+                <p>Data de Nascimento: ${membro.data_nascimento || 'Não informada'}</p>
+                <p>Telefone: ${membro.telefone || 'Não informado'}</p>
+                <p>Email: ${membro.email || 'Não informado'}</p>
+                <p>Perfil: ${membro.perfil === 'admin' ? 'Administrador' : 'Usuário Comum'}</p>
+                <div class="card-actions">
+                    <button onclick="alterarPerfilMembro('${membro.id}', '${membro.perfil === 'admin' ? 'comum' : 'admin'}')">
+                        ${membro.perfil === 'admin' ? 'Definir como Usuário Comum' : 'Promover a Administrador'}
+                    </button>
+                    <button onclick="excluirMembro('${membro.id}')">Excluir</button>
+                </div>
+            `;
+            return card;
+        }
+
+        async function alterarPerfilMembro(id, novoPerfil) {
+            try {
+                const response = await fazerRequisicao(`http://localhost:3000/membros/${id}/alterar-perfil`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ perfil: novoPerfil })
+                });
+
+                if (response.ok) {
+                    alert(`Perfil alterado com sucesso para ${novoPerfil === 'admin' ? 'Administrador' : 'Usuário Comum'}!`);
+                    carregarMembros();
+                } else {
+                    const error = await response.json();
+                    alert(error.error || 'Erro ao alterar perfil');
+                }
+            } catch (error) {
+                console.error('Erro ao alterar perfil:', error);
+                alert('Erro ao alterar perfil do membro');
+            }
+        }
+
+        // Carregar dados iniciais
+        document.addEventListener('DOMContentLoaded', async () => {
+            await carregarUsuario();
+            
+            // Definir o mês atual
+            const hoje = new Date();
+            const mesAtual = hoje.getFullYear() + '-' + String(hoje.getMonth() + 1).padStart(2, '0');
+            document.getElementById('mesSelecionado').value = mesAtual;
+            
+            if (usuarioAtual.perfil === 'admin') {
+                await carregarIgrejas();
+                await carregarMembros();
+            }
+        });
+    </script>
+</body>
+</html> 

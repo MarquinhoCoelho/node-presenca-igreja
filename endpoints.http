@@ -1,0 +1,186 @@
+@baseUrl = http://localhost:3000
+@igrejaId = 13bb4b2c-61a0-403c-984d-3f5f63e96325
+@membroId = fd4eb613-ff51-442a-86e5-1d581717c17d
+@membroId2 = 2
+@email = pr.josue@email.com
+@senha = 123
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImZkNGViNjEzLWZmNTEtNDQyYS04NmU1LTFkNTgxNzE3YzE3ZCIsImVtYWlsIjoicHIuam9zdWVAZW1haWwuY29tIiwiaWF0IjoxNzQ1NTg4NTUxLCJleHAiOjE3NDU1OTIxNTF9.V6ZnJu2resAfGHcI3_J3YgtRdEVZflCs-ybMj9Oevhs
+
+### Autenticação
+
+# Login
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{senha}}"
+}
+
+###
+
+# Cadastrar Senha
+POST {{baseUrl}}/membros/cadastrar-senha
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{senha}}"
+}
+
+################################################################################
+
+### Igrejas
+
+# Criar uma nova igreja
+POST {{baseUrl}}/igrejas
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "nome": "Igreja Cristã Maranata Estreito",
+  "endereco": "Rua das Flores, 123",
+  "telefone": "(48) 99999-9999"
+}
+
+###
+
+# Listar todas as igrejas
+GET {{baseUrl}}/igrejas
+Authorization: Bearer {{token}}
+
+###
+
+# Buscar igreja por ID
+GET {{baseUrl}}/igrejas/{{igrejaId}}
+Authorization: Bearer {{token}}
+
+###
+
+# Atualizar igreja
+PUT {{baseUrl}}/igrejas/{{igrejaId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "nome": "Igreja Cristã Maranata Estreito",
+  "endereco": "Rua das Flores, 123",
+  "telefone": "(48) 99999-9999"
+}
+
+###
+
+# Deletar igreja
+DELETE {{baseUrl}}/igrejas/{{igrejaId}}
+Authorization: Bearer {{token}}
+
+################################################################################
+
+### Membros
+
+# Criar um novo membro
+POST {{baseUrl}}/membros
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "nome": "Josué Emerick",
+  "data_nascimento": "1990-05-10",
+  "telefone": "(32) 99945-4035",
+  "email": "pr.josue@email.com",
+  "igreja_id": "{{igrejaId}}"
+}
+
+###
+
+# Listar todos os membros
+GET {{baseUrl}}/membros
+Authorization: Bearer {{token}}
+
+###
+
+# Buscar membro por ID
+GET {{baseUrl}}/membros/{{membroId}}
+Authorization: Bearer {{token}}
+
+###
+
+# Atualizar membro
+PUT {{baseUrl}}/membros/{{membroId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "nome": "Maria da Silva Atualizada",
+  "data_nascimento": "1990-05-10",
+  "telefone": "(48) 98765-4321",
+  "email": "maria@email.com",
+  "igreja_id": "{{igrejaId}}"
+}
+
+###
+
+# Deletar membro
+DELETE {{baseUrl}}/membros/{{membroId}}
+Authorization: Bearer {{token}}
+
+###
+
+# Listar membros de uma igreja
+GET {{baseUrl}}/igrejas/{{igrejaId}}/membros
+Authorization: Bearer {{token}}
+
+################################################################################
+
+### Presenças
+
+# Registrar presença individual
+POST {{baseUrl}}/presencas
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "membro_id": "{{membroId}}",
+  "data_presenca": "2024-04-29",
+  "dia_semana": "Terça"
+}
+
+###
+
+# Registrar múltiplas presenças de uma vez
+POST {{baseUrl}}/presencas/lote
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "presentes": [
+    "{{membroId}}",
+    "{{membroId2}}"
+  ],
+  "data_presenca": "2024-04-25",
+  "dia_semana": "Sexta"
+}
+
+###
+
+# Ver presenças de um membro
+GET {{baseUrl}}/membros/{{membroId}}/presencas
+Authorization: Bearer {{token}}
+
+###
+
+# Ver resumo de presenças por mês
+GET {{baseUrl}}/membros/{{membroId}}/presencas/resumo?mes=2024-04
+Authorization: Bearer {{token}}
+
+###
+
+# Verificar presenças registradas
+GET {{baseUrl}}/membros/{{membroId}}/presencas/verificar?data=2024-04-24
+Authorization: Bearer {{token}}
+
+###
+
+# Limpar todas as presenças
+DELETE {{baseUrl}}/presencas
+Authorization: Bearer {{token}}

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sistema de Presenças</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+        }
+        .card {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .form-container {
+            display: none;
+        }
+        .form-container.active {
+            display: block;
+        }
+        .toggle-form {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .toggle-form a {
+            cursor: pointer;
+            color: #0d6efd;
+            text-decoration: none;
+        }
+        .toggle-form a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container">
+        <div class="login-container">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title text-center mb-4">Sistema de Presenças</h3>
+                    
+                    <!-- Formulário de Login -->
+                    <div id="loginForm" class="form-container active">
+                        <h5 class="mb-3">Login</h5>
+                        <form id="formLogin">
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="emailLogin" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Senha</label>
+                                <input type="password" class="form-control" id="senhaLogin" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Entrar</button>
+                        </form>
+                        <div class="toggle-form">
+                            Não tem uma conta? <a onclick="mostrarCadastro()">Cadastre-se</a>
+                        </div>
+                    </div>
+
+                    <!-- Formulário de Cadastro -->
+                    <div id="cadastroForm" class="form-container">
+                        <h5 class="mb-3">Cadastrar Senha</h5>
+                        <form id="formCadastroSenha">
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="emailCadastro" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Senha</label>
+                                <input type="password" class="form-control" id="senhaCadastro" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Confirmar Senha</label>
+                                <input type="password" class="form-control" id="confirmarSenha" required>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100">Cadastrar</button>
+                        </form>
+                        <div class="toggle-form">
+                            Já tem uma conta? <a onclick="mostrarLogin()">Faça login</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Funções para alternar entre formulários
+        function mostrarLogin() {
+            document.getElementById('loginForm').classList.add('active');
+            document.getElementById('cadastroForm').classList.remove('active');
+        }
+
+        function mostrarCadastro() {
+            document.getElementById('cadastroForm').classList.add('active');
+            document.getElementById('loginForm').classList.remove('active');
+        }
+
+        // Formulário de Login
+        document.getElementById('formLogin').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                const response = await fetch('http://localhost:3000/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: document.getElementById('emailLogin').value,
+                        password: document.getElementById('senhaLogin').value
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    localStorage.setItem('token', data.token);
+                    window.location.href = 'front.html';
+                } else {
+                    alert('Email ou senha inválidos');
+                }
+            } catch (error) {
+                console.error('Erro ao fazer login:', error);
+                alert('Erro ao fazer login');
+            }
+        });
+
+        // Formulário de Cadastro de Senha
+        document.getElementById('formCadastroSenha').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const senha = document.getElementById('senhaCadastro').value;
+            const confirmarSenha = document.getElementById('confirmarSenha').value;
+            
+            if (senha !== confirmarSenha) {
+                alert('As senhas não coincidem');
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:3000/membros/cadastrar-senha', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: document.getElementById('emailCadastro').value,
+                        password: senha
+                    })
+                });
+                
+                if (response.ok) {
+                    alert('Senha cadastrada com sucesso!');
+                    document.getElementById('formCadastroSenha').reset();
+                    mostrarLogin();
+                } else {
+                    const data = await response.json();
+                    alert(data.error || 'Erro ao cadastrar senha');
+                }
+            } catch (error) {
+                console.error('Erro ao cadastrar senha:', error);
+                alert('Erro ao cadastrar senha');
+            }
+        });
+    </script>
+</body>
+</html> 
