@@ -247,9 +247,8 @@ O sistema possui dois tipos de perfis:
 
 ## Front-end
 
-O sistema possui uma interface web que pode ser acessada através dos arquivos:
-- `login.html`: Tela de login e cadastro de senha
-- `front.html`: Interface principal do sistema
+O sistema possui uma interface web que pode ser acessada através do repositorio:
+https://github.com/MarquinhoCoelho/web-presenca-igreja
 
 ## Contribuição
 
@@ -259,6 +258,4 @@ O sistema possui uma interface web que pode ser acessada através dos arquivos:
 4. Push para a branch (`git push origin feature/nova-feature`)
 5. Abra um Pull Request
 
-## Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes. 
+## Autor Marcos Coelho
